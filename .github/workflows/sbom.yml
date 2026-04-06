@@ -1,3 +1,32 @@
+# name: syft-sbom-ci
+
+# on:
+#   release:
+#     types: [published]
+#   workflow_dispatch:
+
+# jobs:
+#   syft-sbom:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v2
+        
+#     - name: CycloneDX SBOM Action
+#       uses: anchore/sbom-action@v0.24.0
+#       with:
+#         format: cyclonedx-json
+#         artifact-name: ${{ github.event.release.tag_name }}.cyclonedx-json.json
+
+#     - name: SPDX SBOM Action
+#       uses: anchore/sbom-action@v0.24.0
+#       with:
+#         dependency-snapshot: true
+#         artifact-name: ${{ github.event.release.tag_name }}.spdx.json
+
+
 name: syft-sbom-ci
 
 on:
@@ -5,23 +34,25 @@ on:
     types: [published]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   syft-sbom:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
         
-    - name: CycloneDX SBOM Action
-      uses: anchore/sbom-action@v0.24.0
-      with:
-        format: cyclonedx-json
-        artifact-name: ${{ github.event.release.tag_name }}.cyclonedx-json.json
+      - name: CycloneDX SBOM Action
+        uses: anchore/sbom-action@v0.24.0
+        with:
+          format: cyclonedx-json
+          artifact-name: ${{ github.event.release.tag_name || 'manual' }}.cyclonedx-json.json
 
-    - name: SPDX SBOM Action
-      uses: anchore/sbom-action@v0.24.0
-      with:
-        dependency-snapshot: true
-        artifact-name: ${{ github.event.release.tag_name }}.spdx.json
+      - name: SPDX SBOM Action
+        uses: anchore/sbom-action@v0.24.0
+        with:
+          dependency-snapshot: true
+          artifact-name: ${{ github.event.release.tag_name || 'manual' }}.spdx.json
