@@ -14,13 +14,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
         
-    - name: Anchore SBOM Action
+    - name: CycloneDX SBOM Action
       uses: anchore/sbom-action@v0.24.0
       with:
         format: cyclonedx-json
         artifact-name: ${{ github.event.release.tag_name }}.cyclonedx-json.json
 
-    - name: Anchore SBOM Action
+    - name: SPDX SBOM Action
       uses: anchore/sbom-action@v0.24.0
       with:
         dependency-snapshot: true
