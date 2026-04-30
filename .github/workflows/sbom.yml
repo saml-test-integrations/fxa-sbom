@@ -1,58 +1,19 @@
-# name: syft-sbom-ci
-
-# on:
-#   release:
-#     types: [published]
-#   workflow_dispatch:
-
-# jobs:
-#   syft-sbom:
-
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v2
-        
-#     - name: CycloneDX SBOM Action
-#       uses: anchore/sbom-action@v0.24.0
-#       with:
-#         format: cyclonedx-json
-#         artifact-name: ${{ github.event.release.tag_name }}.cyclonedx-json.json
-
-#     - name: SPDX SBOM Action
-#       uses: anchore/sbom-action@v0.24.0
-#       with:
-#         dependency-snapshot: true
-#         artifact-name: ${{ github.event.release.tag_name }}.spdx.json
-
-
 name: syft-sbom-ci
 
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - 'release/**' # branch must match this pattern e.g release/v1.0.0
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
 
 jobs:
-  syft-sbom:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: CycloneDX SBOM Action
-        uses: anchore/sbom-action@v0.24.0
-        with:
-          format: cyclonedx-json
-          artifact-name: ${{ github.event.release.tag_name || 'manual' }}.cyclonedx-json.json
-
-      - name: SPDX SBOM Action
-        uses: anchore/sbom-action@v0.24.0
-        with:
-          dependency-snapshot: true
-          artifact-name: ${{ github.event.release.tag_name || 'manual' }}.spdx.json
+  sbom:
+    uses: mozilla/ssdlc-actions/.github/workflows/syft-release-sbom.yml@e5f4689e213becd11a05cc08c5ad666b6d515c7c #saml-test-integrations/sbom-test/.github/workflows/syft-release-sbom.yml@main
+    with:
+      sbom_name: ${{ github.event.release.tag_name || github.sha }}
